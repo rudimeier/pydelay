@@ -1,0 +1,11 @@
+The manual is generated with sphinx.
+
+http://sphinx.pocoo.org/
+
+to build html and latex manuals download sphinx and use 
+
+make latex
+
+or 
+
+make html
