@@ -18,25 +18,23 @@ def gen_disconts(t0, t1, delays, initdisconts=None, order=3, rounddigits=5):
     True
     """
     if initdisconts == None:
-        newdis = [0]
+        newdis = set([0.0])
     else:
-        newdis = initdisconts
+        newdis = set(initdisconts)
 
     if isinstance(delays, dict):
         delays = delays.values()
 
-    alldis = newdis
+    alldis = set([round(dis,rounddigits) for dis in newdis if t0 <= dis and dis <= t1])
     for o in range(order):
         tempdis = newdis
-        newdis = []
+        newdis = set()
         for dis in tempdis:
             for delay in delays:
-                newdis.append(dis + delay)
-        alldis += newdis
+                newdis.add(dis + delay)
+        alldis |= set([round(dis,rounddigits) for dis in newdis if t0 <= dis and dis <= t1])
 
-    alldis = [round(dis,rounddigits) for dis in alldis if t0 <= dis and dis <= t1]
-    erg = list(set(alldis))
-    erg.sort()
+    erg = sorted(alldis)
     return erg
 
 def _symbols_allowedQ(eqn):
