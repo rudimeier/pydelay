@@ -18,19 +18,22 @@ def gen_disconts(t0, t1, delays, initdisconts=None, order=3, rounddigits=5):
     True
     """
     if initdisconts == None:
-        initdisconts = [0]
+        newdis = [0]
+    else:
+        newdis = initdisconts
+
     if isinstance(delays, dict):
         delays = delays.values()
-    newdis = initdisconts
-    alldis = []
+
+    alldis = newdis
     for o in range(order):
-        alldis = alldis + newdis
         tempdis = newdis
         newdis = []
         for dis in tempdis:
             for delay in delays:
                 newdis.append(dis + delay)
-    alldis = alldis + newdis
+        alldis += newdis
+
     alldis = [round(dis,rounddigits) for dis in alldis if t0 <= dis and dis <= t1]
     erg = list(set(alldis))
     erg.sort()
