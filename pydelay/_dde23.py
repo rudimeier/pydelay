@@ -177,6 +177,7 @@ class dde23:
         self.rseed = int(str(int(time.time()*10))[3:]) # generate a random seed from the time
         self.delayhashs = [] # the md5 hash values of the delay terms
         self.code = ''       # the generated c code
+        self.code_manu = ''  # the generated standalone c code (ifdef MANUAL)
         self.vars = []
         self.types = {}      # the types of the variables: e.g. {'x': 'double', 'z': 'Complex'}
         self.nptypes = {}    # the numpy types e.g. {'x': 'NPY_DOUBLE', 'z': 'NPY_CDOUBLE'}
@@ -610,9 +611,10 @@ class dde23:
             self._mindelay = 5.0
 
 
-        code =\
+        code = ""
+
+        code_manu_1 =\
         """
-#ifdef MANUAL
 int main()
 {
 double dtmin = 0.0001;
@@ -631,13 +633,15 @@ double discont[4] = {maxdelay, 2*maxdelay, 3*maxdelay, tfinal};
 
         for par in self.params:
             if 'complex' in str(type(self.params[par])):
-                code += "Complex PAR%s = %s;\n"%(par, self.params[par])
+                code_manu_1 += "Complex PAR%s = %s;\n"%(par, self.params[par])
             else:
-                code += "double PAR%s = %s;\n"%(par, self.params[par])
-
+                code_manu_1 += "double PAR%s = %s;\n"%(par, self.params[par])
 
         code +=\
         """
+#ifdef MANUAL
+/* include "code_manu_1.cpp" */
+%CODE_MANU_1%
 #endif
 
 t = 0.0; 
@@ -688,9 +692,13 @@ for(i = 0; i < nstart+1; i++) {
         code +="""
 for(i = 0; i < nstart+1; i++) 
     pt_t_ar[i] = Thist_ar[i];
+#else
+/* include "code_manu_2.cpp" */
+%CODE_MANU_2%
 #endif
+"""
 
-#ifdef MANUAL
+        code_manu_2 ="""
 for(i = 0; i < nstart+1; i++) 
     pt_t_ar[i]  = -maxdelay*(nstart-i)/nstart; 
 
@@ -698,19 +706,13 @@ for(i = 0; i < nstart+1; i++)
 """
 
         for var in self.vars:
-            code +=\
+            code_manu_2 +=\
             """ 
 for(i = 0; i < nstart+1; i++) {
     pt_%(var)s_ar[i]  = 0.2; // history value for the variable
     pt_%(var)s_Var[i] = 0.0; // history of the derivatives (0.0 if constant history)
 }
 """%{'var': var, 'type': self.types[var]}
-
-        code +=\
-        """
-#endif
-
-        """
 
         # initalise some variables
         for var in self.vars:
@@ -935,16 +937,17 @@ if(NumberOfMinSteps>1)
 
 return_val =  erg;
 Py_DECREF(erg);
+#else
+/* include "code_manu_3.cpp" */
+%CODE_MANU_3%
 #endif
 """
-        code +=\
-            """ 
-#ifdef MANUAL
+        code_manu_3 =\
+            """
 for(i = 0; i < SIM_n; i++) 
     std:: cout << pt_t_ar[i] << "\t" << %s << std::endl;
     return 0;
 }
-#endif
 """%(' << "\t" << '.join(['pt_%s_ar[i]'%var for var in self.vars]))
 
         includes=\
@@ -1069,12 +1072,17 @@ inline %(vartype)s dt_hermite_%(var)s(const double &t, const double &tn, const %
                 '// the support code and recompile in this case\n'+\
                 '// %s\n'%hashlib.md5(includes).hexdigest()
         self.code = code
+        self.code_manu = (code
+            .replace("%CODE_MANU_1%", code_manu_1)
+            .replace("%CODE_MANU_2%", code_manu_2)
+            .replace("%CODE_MANU_3%", code_manu_3)
+        )
 
     def output_ccode(self):
         txt = ''
         txt += self.includes
         txt += "\n\n"
-        txt += self.code
+        txt += self.code_manu
         return txt
 
     def run(self):
