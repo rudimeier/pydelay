@@ -645,6 +645,19 @@ double discont[4] = {maxdelay, 2*maxdelay, 3*maxdelay, tfinal};
 %CODE_MANU_1%
 #endif
 
+std::cout << "int RSEED = " << RSEED << ";" << std::endl;
+std::cout << "double dtmin = " << dtmin << ";" << std::endl;
+std::cout << "double dtmax = " << dtmax << ";" << std::endl;
+std::cout << "double tfinal = " << tfinal << ";" << std::endl;
+std::cout << "double RelTol = " << RelTol << ";" << std::endl;
+std::cout << "double AbsTol = " << AbsTol << ";" << std::endl;
+std::cout << "int chunk = " << chunk << ";" << std::endl;
+std::cout << "int nstart = " << nstart << ";" << std::endl;
+std::cout << "double dt0 = " << dt0 << ";" << std::endl;
+std::cout << "double maxdelay = " << discont[0] << ";" << std::endl;
+std::cout << "long unsigned int MaxIter = " << MaxIter << ";" << std::endl;
+std::cout << "int NumOfDiscont = " << NumOfDiscont << ";" << std::endl;
+
 t = 0.0; 
 long unsigned int i;
 long unsigned int NumberOfMinSteps = 0;
