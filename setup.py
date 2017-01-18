@@ -1,6 +1,6 @@
 from distutils.core import setup
 setup(name='pydelay',
-      version='0.1.1',
+      version='0.1.99',
       author='Valentin Flunkert',
       author_email='flunkert@gmail.com',
       license='MIT',

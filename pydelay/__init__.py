@@ -9,4 +9,4 @@ Last update: 23.10.2009
 from _dde23 import dde23 
 #from constantStepper import dde3
 __all__ = ['dde23', 'gen_disconts']
-__version__ = '0.1.1'
+__version__ = '0.1.99'
