@@ -617,6 +617,7 @@ class dde23:
         """
 int main()
 {
+int RSEED = 12345;
 double dtmin = 0.0001;
 double dtmax = 0.1;
 double tfinal = 100.0;
@@ -625,7 +626,7 @@ double AbsTol = 1.0E-6;
 int chunk = 10000;
 int nstart = 101;
 double dt0 = 0.01;
-double maxdelay = ...; // Set the maximum delay here !!!
+double maxdelay = 1.2345; // Set the maximum delay here !!!
 long unsigned int MaxIter = 10000000;
 int NumOfDiscont = 4;
 double discont[4] = {maxdelay, 2*maxdelay, 3*maxdelay, tfinal};
