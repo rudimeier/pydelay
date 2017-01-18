@@ -952,14 +952,23 @@ for(i = 0; i < SIM_n; i++)
 
         includes=\
         """
+/****** uncomment the following line to run generated source code directly ***************/
+// #define MANUAL
+
+/* just inform the python user that we don't use the cached binary */
+#ifndef MANUAL
+# warning "re-compile pydelay C code"
+#endif
+
 #include<complex>
 #include<math.h>
 #include<cmath>
 #include<cstdlib>
 #include<iostream>
 
-/****** uncomment the following line to run generated source code directly ***************/
-//#define MANUAL
+/* silence some warnings */
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wsign-compare"
 
 #define false 0;
 #define true 1;
