@@ -17,25 +17,40 @@ def gen_disconts(t0, t1, delays, initdisconts=None, order=3, rounddigits=5):
     >>> [0, 3, 5, 6, 8, 10] == gen_disconts(0, 100, [3.0, 5.0], [0], 2)
     True
     """
+
+    delays = np.unique(np.array(delays))
+    print "delays len:", delays.size
+
     if initdisconts == None:
-        newdis = set([0.0])
+        newdis = np.array([0.0])
     else:
-        newdis = set(initdisconts)
+        newdis = np.array(initdisconts)
 
-    if isinstance(delays, dict):
-        delays = delays.values()
-
-    alldis = set([round(dis,rounddigits) for dis in newdis if t0 <= dis and dis <= t1])
+    alldis = np.round(newdis,rounddigits)
+    alldis = alldis[(alldis>=t0) & (alldis <= t1)]
     for o in range(order):
         tempdis = newdis
-        newdis = set()
-        for dis in tempdis:
-            for delay in delays:
-                newdis.add(dis + delay)
-        alldis |= set([round(dis,rounddigits) for dis in newdis if t0 <= dis and dis <= t1])
+        print "LEN", o,tempdis.size,  tempdis.size * len(delays)
+        l = tempdis.size
+        newdis = np.empty([ l * len(delays),])
+        i=0
+        for delay in delays:
+            newdis[i:i+l] = tempdis + delay
+            i += l
 
-    erg = sorted(alldis)
-    return erg
+        newdis = np.unique(newdis)
+
+        x = np.round(newdis,rounddigits)
+        x = x[(x>=t0) & (x <= t1)]
+        #below the old way which would restore old rounding behavior
+        #x = np.array([round(dis,rounddigits) for dis in newdis if t0 <= dis and dis <= t1])
+        alldis = np.concatenate((alldis, x))
+
+    # unique() already sorts!
+    alldis = np.unique(alldis)
+
+    print "END:", alldis.size
+    return alldis
 
 def _symbols_allowedQ(eqn):
     """Takes an eqn string and returns True if all symbols
