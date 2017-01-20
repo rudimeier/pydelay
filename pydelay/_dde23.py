@@ -326,7 +326,8 @@ class dde23:
                     pass
         discont = gen_disconts(0, tfinal, self.delays, order=order)[1:] #remove 0 from discont
         if tfinal not in discont:
-            discont.append(tfinal)
+            discont = np.append(discont, tfinal)
+            #discont.append(tfinal)
         self.discont = discont
 
         self.simul['tfinal']   = tfinal
@@ -1132,11 +1133,13 @@ inline %(vartype)s dt_hermite_%(var)s(const double &t, const double &tn, const %
         Thist_ar = self.hist['t']
         chunk = self.chunk
 
-        discont = list(set(self.discont))
-        discont.sort()
+        #discont = list(set(self.discont))
+        #discont.sort()
 
-        discont = np.array(discont)
+        #discont = np.array(discont)
+        discont= self.discont
         NumOfDiscont = len(discont)
+        
         RSEED = self.rseed
 
         self.sol = weave.inline(self.code,

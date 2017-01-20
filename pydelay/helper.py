@@ -40,10 +40,10 @@ def gen_disconts(t0, t1, delays, initdisconts=None, order=3, rounddigits=5):
 
         newdis = np.unique(newdis)
 
-        x = np.round(newdis,rounddigits)
-        x = x[(x>=t0) & (x <= t1)]
+        #x = np.round(newdis,rounddigits)
+        #x = x[(x>=t0) & (x <= t1)]
         #below the old way which would restore old rounding behavior
-        #x = np.array([round(dis,rounddigits) for dis in newdis if t0 <= dis and dis <= t1])
+        x = np.array([round(dis,rounddigits) for dis in newdis if t0 <= dis and dis <= t1])
         alldis = np.concatenate((alldis, x))
 
     # unique() already sorts!
