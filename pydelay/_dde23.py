@@ -324,10 +324,9 @@ class dde23:
                     order = int(math.ceil(tfinal/self._mindelay))
                 except:
                     pass
-        discont = gen_disconts(0, tfinal, self.delays, order=order)[1:] #remove 0 from discont
+        discont = gen_disconts(0, tfinal, self.delays, order=order)
         if tfinal not in discont:
             discont = np.append(discont, tfinal)
-            #discont.append(tfinal)
         self.discont = discont
 
         self.simul['tfinal']   = tfinal

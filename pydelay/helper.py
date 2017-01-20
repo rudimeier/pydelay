@@ -22,12 +22,15 @@ def gen_disconts(t0, t1, delays, initdisconts=None, order=3, rounddigits=5):
     print "delays len:", delays.size
 
     if initdisconts == None:
-        newdis = np.array([0.0])
+        newdis = delays.copy()
+        order -= 1
     else:
-        newdis = np.array(initdisconts)
+        initdisconts = np.unique(np.array(initdisconts))
+        newdis = initdisconts
 
-    alldis = np.round(newdis,rounddigits)
-    alldis = alldis[(alldis>=t0) & (alldis <= t1)]
+    alldis = np.array([round(dis,rounddigits) for dis in newdis])
+    alldis = alldis[np.where((alldis>=t0) & (alldis<=t1))]
+
     for o in range(order):
         tempdis = newdis
         print "LEN", o,tempdis.size,  tempdis.size * len(delays)
@@ -57,7 +60,7 @@ def gen_disconts(t0, t1, delays, initdisconts=None, order=3, rounddigits=5):
     # unique() already sorts!
     alldis = np.unique(alldis)
 
-    print "END:", alldis.size
+    print "END:", alldis.size, "...", alldis[0:4]
     return alldis
 
 def _symbols_allowedQ(eqn):
