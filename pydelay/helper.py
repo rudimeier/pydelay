@@ -38,14 +38,22 @@ def gen_disconts(t0, t1, delays, initdisconts=None, order=3, rounddigits=5):
             newdis[i:i+l] = tempdis + delay
             i += l
 
+        print "newdis unique", newdis.size
         newdis = np.unique(newdis)
 
+        print "x round", newdis.size
+        # rounding via numpy, very fast, but a bit different
         #x = np.round(newdis,rounddigits)
-        #x = x[(x>=t0) & (x <= t1)]
-        #below the old way which would restore old rounding behavior
-        x = np.array([round(dis,rounddigits) for dis in newdis if t0 <= dis and dis <= t1])
+        # rounding, the old slow way to not change known behavior
+        x = np.array([round(dis,rounddigits) for dis in newdis])
+
+        print "x range", x.size
+        x = x[np.where((x>=t0) & (x<=t1))]
+
+        print "x concat", x.size
         alldis = np.concatenate((alldis, x))
 
+    print "alldis unique", alldis.size
     # unique() already sorts!
     alldis = np.unique(alldis)
 

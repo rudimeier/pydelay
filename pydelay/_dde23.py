@@ -1110,6 +1110,7 @@ inline %(vartype)s dt_hermite_%(var)s(const double &t, const double &tn, const %
         return txt
 
     def run(self):
+        print "run"
         """run the simulation"""
         # get the parameters for the simulation into the local variables
         # so that they can be given to the c extension
@@ -1141,7 +1142,8 @@ inline %(vartype)s dt_hermite_%(var)s(const double &t, const double &tn, const %
         NumOfDiscont = len(discont)
         
         RSEED = self.rseed
-
+        #sys.exit(0)
+        print "weave"
         self.sol = weave.inline(self.code,
                             ['PAR%s'%p for p in self.params] +\
                             ['hist%s_ar'%var for var in self.vars] +\
