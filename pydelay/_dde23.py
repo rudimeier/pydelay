@@ -52,10 +52,10 @@ class dde23:
         sampled times.
 
     `self.discont` 
-        List of discontinuity times. This is generated from the occurring
+        Sorted numpy array of discontinuity times. This is generated from the occurring
         delays by propagating the discontinuity at ``t=0``. The solver will step on these 
         discontinuities. If you want the solver to step onto certain times they can
-        be inserted here. 
+        be inserted here (Keep the array sorted!).
 
     `self.rseed`  
         Can be set to initialise the random number generator with a specific
@@ -182,7 +182,7 @@ class dde23:
         self.types = {}      # the types of the variables: e.g. {'x': 'double', 'z': 'Complex'}
         self.nptypes = {}    # the numpy types e.g. {'x': 'NPY_DOUBLE', 'z': 'NPY_CDOUBLE'}
         self.delays = []
-        self.discont = []
+        self.discont = np.array([])
         self.simul = {}      # the simulation parameters "tfinal", "AbsTol",...
         self.sol = {}        # the solutions
         self.hist = {}       # the history
@@ -324,9 +324,9 @@ class dde23:
                     order = int(math.ceil(tfinal/self._mindelay))
                 except:
                     pass
-        discont = gen_disconts(0, tfinal, self.delays, order=order)[1:] #remove 0 from discont
+        discont = gen_disconts(0, tfinal, self.delays, order=order)
         if tfinal not in discont:
-            discont.append(tfinal)
+            discont = np.append(discont, tfinal)
         self.discont = discont
 
         self.simul['tfinal']   = tfinal
@@ -1109,6 +1109,7 @@ inline %(vartype)s dt_hermite_%(var)s(const double &t, const double &tn, const %
         return txt
 
     def run(self):
+        print "run"
         """run the simulation"""
         # get the parameters for the simulation into the local variables
         # so that they can be given to the c extension
@@ -1132,13 +1133,12 @@ inline %(vartype)s dt_hermite_%(var)s(const double &t, const double &tn, const %
         Thist_ar = self.hist['t']
         chunk = self.chunk
 
-        discont = list(set(self.discont))
-        discont.sort()
-
-        discont = np.array(discont)
+        discont= self.discont
         NumOfDiscont = len(discont)
         RSEED = self.rseed
 
+        #sys.exit(0)
+        print "weave"
         self.sol = weave.inline(self.code,
                             ['PAR%s'%p for p in self.params] +\
                             ['hist%s_ar'%var for var in self.vars] +\
