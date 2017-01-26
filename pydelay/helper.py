@@ -11,11 +11,11 @@ def gen_disconts(t0, t1, delays, initdisconts=None, order=3, rounddigits=5):
 
     'delays' can be a dictionary or a list of numbers.
 
-    >>> [0, 2, 4, 6, 8, 10, 12] == gen_disconts(0, 100, [2.0, 4.0], [-10, 0], 3)
-    True
+    >>> gen_disconts(0, 100, [2.0, 4.0], [-10, 0], 3)
+    array([  0.,   2.,   4.,   6.,   8.,  10.,  12.])
 
-    >>> [0, 3, 5, 6, 8, 10] == gen_disconts(0, 100, [3.0, 5.0], [0], 2)
-    True
+    >>> gen_disconts(0, 100, [3.0, 5.0], [0], 2)
+    array([  0.,   3.,   5.,   6.,   8.,  10.])
     """
 
     delays = np.unique(np.array(delays))
